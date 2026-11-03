@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FarmFi – Agricultural DeFi on Botchain</title>
+<style>
+  :root {
+    --amber: #d97706;
+    --amber-light: #f59e0b;
+    --amber-bg: #fffbeb;
+    --brown: #78350f;
+    --dark: #1c1917;
+    --gray: #78716c;
+    --white: #ffffff;
+    --border: #e7d5a8;
+    --green: #16a34a;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--amber-bg); color: var(--dark); }
+
+  header { background: var(--brown); color: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 1.4rem; }
+  header .tag { background: var(--amber-light); color: var(--brown); padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+
+  .hero { background: linear-gradient(135deg, var(--brown) 0%, #92400e 100%); color: white; text-align: center; padding: 3rem 1rem; }
+  .hero h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+  .hero p { opacity: 0.85; max-width: 500px; margin: 0 auto 1.5rem; }
+
+  .stats-bar { display: flex; background: white; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .stat-item { flex: 1; min-width: 120px; text-align: center; padding: 1rem 0.5rem; border-right: 1px solid var(--border); }
+  .stat-item .val { font-size: 1.5rem; font-weight: 800; color: var(--amber); }
+  .stat-item .lbl { font-size: 0.7rem; color: var(--gray); }
+
+  nav { display: flex; gap: 0.5rem; padding: 1rem 2rem; background: white; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  nav button { background: none; border: 1px solid var(--border); padding: 0.45rem 1.1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; color: var(--gray); transition: all 0.2s; }
+  nav button.active, nav button:hover { background: var(--amber); color: white; border-color: var(--amber); }
+
+  .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .card h3 { color: var(--brown); margin-bottom: 1rem; }
+
+  .form-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .form-row label { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; font-size: 0.85rem; color: var(--gray); }
+  .form-row input, .form-row select { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.9rem; outline: none; }
+  .form-row input:focus, .form-row select:focus { border-color: var(--amber); }
+
+  .btn { background: var(--amber); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+  .btn:hover { background: var(--amber-light); }
+  .btn-green { background: var(--green); }
+  .btn-outline { background: none; border: 1px solid var(--amber); color: var(--amber); }
+
+  .loan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .loan-card { background: var(--amber-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; }
+  .loan-card h4 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+  .loan-card p { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.2rem; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .badge-active { background: #dcfce7; color: var(--green); }
+  .badge-overdue { background: #fee2e2; color: var(--red); }
+  .badge-repaid { background: #dbeafe; color: #1d4ed8; }
+
+  .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; margin: 0.5rem 0; }
+  .progress-fill { background: var(--green); height: 100%; border-radius: 10px; transition: width 0.5s; }
+
+  .pool-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .pool-stat { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .pool-stat .v { font-size: 1.4rem; font-weight: 800; color: var(--amber); }
+  .pool-stat .l { font-size: 0.75rem; color: var(--gray); }
+
+  .credit-bar { display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0; }
+  .credit-track { flex: 1; background: #e5e7eb; border-radius: 10px; height: 10px; }
+  .credit-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--red) 0%, var(--amber) 50%, var(--green) 100%); }
+  .credit-val { font-weight: 700; font-size: 1rem; color: var(--amber); width: 40px; }
+
+  footer { text-align: center; padding: 2rem; color: var(--gray); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌾 FarmFi</h1>
+  <span class="tag">Botchain DeFi</span>
+</header>
+
+<div class="hero">
+  <h2>Agricultural Micro-Finance, On-Chain</h2>
+  <p>Farmers borrow against crop collateral. Lenders earn yield. Credit scored by repayment history. All on Botchain.</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="val">₿ 142</div><div class="lbl">Pool Liquidity (BOT)</div></div>
+  <div class="stat-item"><div class="val">67</div><div class="lbl">Active Loans</div></div>
+  <div class="stat-item"><div class="val">8.4%</div><div class="lbl">Avg APY (Lenders)</div></div>
+  <div class="stat-item"><div class="val">94%</div><div class="lbl">Repayment Rate</div></div>
+  <div class="stat-item"><div class="val">312</div><div class="lbl">Farmers</div></div>
+</div>
+
+<nav>
+  <button class="active" onclick="showSection('overview')">🏦 Pool</button>
+  <button onclick="showSection('borrow')">🌱 Borrow</button>
+  <button onclick="showSection('lend')">💰 Lend</button>
+  <button onclick="showSection('myloans')">📋 My Loans</button>
+  <button onclick="showSection('profile')">👤 Profile</button>
+</nav>
+
+<div class="container">
+
+  <div id="overview" class="section active">
+    <div class="pool-info">
+      <div class="pool-stat"><div class="v">142 BOT</div><div class="l">Total Deposits</div></div>
+      <div class="pool-stat"><div class="v">89 BOT</div><div class="l">Deployed in Loans</div></div>
+      <div class="pool-stat"><div class="v">53 BOT</div><div class="l">Available Liquidity</div></div>
+    </div>
+    <div class="card">
+      <h3>📊 Season Activity</h3>
+      <div style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Current season: <strong>Post-Harvest 2026</strong></div>
+      <div class="loan-grid">
+        <div class="loan-card">
+          <span class="badge badge-active">Active</span>
+          <h4>Tomato Farm Loan</h4>
+          <p>👨‍🌾 Ade Bello · Oyo State</p>
+          <p>💰 12 BOT · 90 days · 8% p.a.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+          <p style="font-size:0.7rem;color:var(--gray)">60% repaid</p>
+        </div>
+        <div class="loan-card">
+          <span class="badge badge-active">Active</span>
+          <h4>Rice Farm Planting Loan</h4>
+          <p>👨‍🌾 Emeka Obi · Anambra</p>
+          <p>💰 8 BOT · 180 days · 6% p.a.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+          <p style="font-size:0.7rem;color:var(--gray)">20% repaid</p>
+        </div>
+        <div class="loan-card">
+          <span class="badge badge-repaid">Repaid</span>
+          <h4>Cassava Harvest Loan</h4>
+          <p>👩‍🌾 Aisha Musa · Kano</p>
+          <p>💰 5 BOT · 60 days · 10% p.a.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+          <p style="font-size:0.7rem;color:var(--gray)">Fully repaid ✓</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="borrow" class="section">
+    <div class="card">
+      <h3>🌱 Request a Farm Loan</h3>
+      <div class="form-row">
+        <label>Loan Amount (BOT) <input id="lAmount" type="number" placeholder="10" /></label>
+        <label>Duration (days) <input id="lDur" type="number" placeholder="90" /></label>
+      </div>
+      <div class="form-row">
+        <label>Season Phase
+          <select id="lSeason">
+            <option>Planting</option>
+            <option>Growing</option>
+            <option>Harvest</option>
+            <option>Post-Harvest</option>
+          </select>
+        </label>
+        <label>Collateral Description <input id="lColl" placeholder="e.g. 500kg Tomato crop" /></label>
+      </div>
+      <div class="form-row">
+        <label>Collateral Value (BOT) <input id="lCollVal" type="number" placeholder="15" /></label>
+      </div>
+      <p style="font-size:0.8rem;color:var(--gray);margin-bottom:1rem">Minimum 150% collateral ratio required. Your credit score determines interest rate.</p>
+      <button class="btn" onclick="requestLoan()">Request Loan on Botchain</button>
+    </div>
+    <div class="card">
+      <h3>📈 Interest Rate Guide</h3>
+      <table style="width:100%;font-size:0.85rem;border-collapse:collapse">
+        <tr style="background:#fef3c7">
+          <th style="padding:0.5rem;text-align:left">Credit Score</th>
+          <th style="padding:0.5rem">Rate</th>
+          <th style="padding:0.5rem">Label</th>
+        </tr>
+        <tr><td style="padding:0.5rem">800–1000</td><td style="padding:0.5rem;text-align:center">6%</td><td style="padding:0.5rem;color:var(--green)">Excellent</td></tr>
+        <tr><td style="padding:0.5rem">600–799</td><td style="padding:0.5rem;text-align:center">8%</td><td style="padding:0.5rem;color:var(--amber)">Good</td></tr>
+        <tr><td style="padding:0.5rem">400–599</td><td style="padding:0.5rem;text-align:center">10%</td><td style="padding:0.5rem">Average</td></tr>
+        <tr><td style="padding:0.5rem">0–399</td><td style="padding:0.5rem;text-align:center">12%</td><td style="padding:0.5rem;color:var(--red)">High Risk</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="lend" class="section">
+    <div class="card">
+      <h3>💰 Deposit to Lending Pool</h3>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your BOT earns yield from farmer interest payments. Withdraw anytime (subject to liquidity).</p>
+      <div class="form-row">
+        <label>Deposit Amount (BOT) <input id="dAmt" type="number" placeholder="5" /></label>
+      </div>
+      <button class="btn btn-green" onclick="depositPool()">Deposit to Pool</button>
+    </div>
+    <div class="card">
+      <h3>📤 Withdraw from Pool</h3>
+      <div style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your position: <strong>10 BOT</strong> deposited · Pending rewards: <strong>0.12 BOT</strong></div>
+      <div class="form-row">
+        <label>Withdraw Amount (BOT) <input id="wAmt" type="number" placeholder="5" /></label>
+      </div>
+      <button class="btn btn-outline" onclick="withdrawPool()">Withdraw + Claim Rewards</button>
+    </div>
+  </div>
+
+  <div id="myloans" class="section">
+    <div class="card">
+      <h3>📋 My Active Loans</h3>
+      <div class="loan-grid">
+        <div class="loan-card">
+          <span class="badge badge-active">Active</span>
+          <h4>Loan #23 – Tomato Farming</h4>
+          <p>💰 12 BOT borrowed</p>
+          <p>📅 Due: Jan 15, 2027</p>
+          <p>💸 Total Owed: 12.36 BOT</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+          <p style="font-size:0.7rem;color:var(--gray);margin-bottom:0.75rem">60 of 90 days elapsed</p>
+          <button class="btn btn-green" style="width:100%" onclick="repayLoan(23)">Repay Loan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="profile" class="section">
+    <div class="card">
+      <h3>👤 Farmer Profile</h3>
+      <p style="margin-bottom:1rem">Connected: <strong>0x1234…abcd</strong></p>
+      <div class="form-row">
+        <label>Name <input placeholder="Your name" /></label>
+        <label>Region <input placeholder="e.g. Oyo State" /></label>
+      </div>
+      <button class="btn" onclick="registerFarmer()">Register on Botchain</button>
+      <hr style="margin:1.5rem 0;border-color:var(--border)"/>
+      <h3 style="margin-bottom:1rem">📊 Credit Score</h3>
+      <div class="credit-bar">
+        <div class="credit-track"><div class="credit-fill" style="width:65%"></div></div>
+        <div class="credit-val">650</div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--gray)">Score improves with on-time repayments. Defaults reduce score by 100 points.</p>
+      <hr style="margin:1.5rem 0;border-color:var(--border)"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center">
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)">4</div><div style="font-size:0.75rem;color:var(--gray)">Total Loans</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--green)">3</div><div style="font-size:0.75rem;color:var(--gray)">Repaid</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)">38 BOT</div><div style="font-size:0.75rem;color:var(--gray)">Total Borrowed</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>FarmFi is deployed on Botchain · Smart contract: 0xFarmFi… · Non-custodial protocol</footer>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+  function registerFarmer() { alert('✅ Registering on Botchain...\nSubmitting transaction to FarmFi contract.'); }
+  function requestLoan()    { alert('🌱 Loan request submitted to Botchain!\nAwaiting pool approval and collateral validation.'); }
+  function depositPool()    { alert('💰 Deposit submitted to FarmFi Pool on Botchain!'); }
+  function withdrawPool()   { alert('📤 Withdrawal + reward claim submitted to Botchain!'); }
+  function repayLoan(id)    { alert(`💸 Repaying Loan #${id} on Botchain...\nCalling repayLoan(${id}) with 12.36 BOT.`); }
+</script>
+</body>
+</html>
