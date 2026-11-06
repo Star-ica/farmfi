@@ -77,99 +77,94 @@
   .credit-val { font-weight: 700; font-size: 1rem; color: var(--amber); width: 40px; }
 
   footer { text-align: center; padding: 2rem; color: var(--gray); font-size: 0.8rem; }
+  .hdr-right { display: flex; align-items: center; gap: 0.75rem; }
+  .wallet-btn { background: white; color: var(--brown); border: none; padding: 0.45rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+  .wallet-btn:disabled, .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-red { background: var(--red); }
+  .badge-defaulted { background: #fee2e2; color: var(--red); }
+  .muted { font-size: 0.85rem; color: var(--gray); }
+  .empty { text-align: center; padding: 1.5rem; color: var(--gray); font-size: 0.85rem; grid-column: 1 / -1; }
+  .note { background: #fef3c7; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--brown); margin-bottom: 1rem; }
+  #toast { position: fixed; bottom: 20px; right: 20px; max-width: 340px; background: var(--dark); color: white; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 99; }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.err { background: var(--red); }
+  #toast.ok { background: var(--green); }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🌾 FarmFi</h1>
-  <span class="tag">Botchain DeFi</span>
+  <div class="hdr-right">
+    <span class="tag">BOT Chain · 677</span>
+    <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+  </div>
 </header>
 
 <div class="hero">
   <h2>Agricultural Micro-Finance, On-Chain</h2>
-  <p>Farmers borrow against crop collateral. Lenders earn yield. Credit scored by repayment history. All on Botchain.</p>
+  <p>Farmers borrow BOT for the season. Lenders earn the interest. Rates follow an on-chain credit score built from repayment history.</p>
 </div>
 
 <div class="stats-bar">
-  <div class="stat-item"><div class="val">₿ 142</div><div class="lbl">Pool Liquidity (BOT)</div></div>
-  <div class="stat-item"><div class="val">67</div><div class="lbl">Active Loans</div></div>
-  <div class="stat-item"><div class="val">8.4%</div><div class="lbl">Avg APY (Lenders)</div></div>
-  <div class="stat-item"><div class="val">94%</div><div class="lbl">Repayment Rate</div></div>
-  <div class="stat-item"><div class="val">312</div><div class="lbl">Farmers</div></div>
+  <div class="stat-item"><div class="val" id="stBalance">–</div><div class="lbl">Pool Liquidity (BOT)</div></div>
+  <div class="stat-item"><div class="val" id="stActive">–</div><div class="lbl">Active Loans</div></div>
+  <div class="stat-item"><div class="val" id="stLoans">–</div><div class="lbl">Loans Issued</div></div>
+  <div class="stat-item"><div class="val" id="stRepay">–</div><div class="lbl">Repayment Rate</div></div>
+  <div class="stat-item"><div class="val" id="stBorrowers">–</div><div class="lbl">Borrowers</div></div>
 </div>
 
 <nav>
-  <button class="active" onclick="showSection('overview')">🏦 Pool</button>
-  <button onclick="showSection('borrow')">🌱 Borrow</button>
-  <button onclick="showSection('lend')">💰 Lend</button>
-  <button onclick="showSection('myloans')">📋 My Loans</button>
-  <button onclick="showSection('profile')">👤 Profile</button>
+  <button class="active" onclick="showSection('overview', this)">🏦 Pool</button>
+  <button onclick="showSection('borrow', this)">🌱 Borrow</button>
+  <button onclick="showSection('lend', this)">💰 Lend</button>
+  <button onclick="showSection('myloans', this)">📋 My Loans</button>
+  <button onclick="showSection('profile', this)">👤 Profile</button>
 </nav>
 
 <div class="container">
 
   <div id="overview" class="section active">
     <div class="pool-info">
-      <div class="pool-stat"><div class="v">142 BOT</div><div class="l">Total Deposits</div></div>
-      <div class="pool-stat"><div class="v">89 BOT</div><div class="l">Deployed in Loans</div></div>
-      <div class="pool-stat"><div class="v">53 BOT</div><div class="l">Available Liquidity</div></div>
+      <div class="pool-stat"><div class="v" id="pDeposits">–</div><div class="l">Total Deposits</div></div>
+      <div class="pool-stat"><div class="v" id="pDeployed">–</div><div class="l">Deployed in Loans</div></div>
+      <div class="pool-stat"><div class="v" id="pAvailable">–</div><div class="l">Available to Borrow</div></div>
     </div>
     <div class="card">
-      <h3>📊 Season Activity</h3>
-      <div style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Current season: <strong>Post-Harvest 2026</strong></div>
-      <div class="loan-grid">
-        <div class="loan-card">
-          <span class="badge badge-active">Active</span>
-          <h4>Tomato Farm Loan</h4>
-          <p>👨‍🌾 Ade Bello · Oyo State</p>
-          <p>💰 12 BOT · 90 days · 8% p.a.</p>
-          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
-          <p style="font-size:0.7rem;color:var(--gray)">60% repaid</p>
-        </div>
-        <div class="loan-card">
-          <span class="badge badge-active">Active</span>
-          <h4>Rice Farm Planting Loan</h4>
-          <p>👨‍🌾 Emeka Obi · Anambra</p>
-          <p>💰 8 BOT · 180 days · 6% p.a.</p>
-          <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
-          <p style="font-size:0.7rem;color:var(--gray)">20% repaid</p>
-        </div>
-        <div class="loan-card">
-          <span class="badge badge-repaid">Repaid</span>
-          <h4>Cassava Harvest Loan</h4>
-          <p>👩‍🌾 Aisha Musa · Kano</p>
-          <p>💰 5 BOT · 60 days · 10% p.a.</p>
-          <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
-          <p style="font-size:0.7rem;color:var(--gray)">Fully repaid ✓</p>
-        </div>
-      </div>
+      <h3>📊 Recent Loans</h3>
+      <div class="loan-grid" id="recentLoans"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="card" id="ownerCard" style="display:none">
+      <h3>🛠️ Overdue Loans (Owner)</h3>
+      <p class="muted" style="margin-bottom:1rem">Marking a loan as defaulted lowers the farmer's credit score by 100. It does not recover any BOT.</p>
+      <div class="loan-grid" id="overdueLoans"></div>
     </div>
   </div>
 
   <div id="borrow" class="section">
     <div class="card">
       <h3>🌱 Request a Farm Loan</h3>
+      <div class="note" id="borrowNote">Connect your wallet and register on the Profile tab before borrowing.</div>
       <div class="form-row">
-        <label>Loan Amount (BOT) <input id="lAmount" type="number" placeholder="10" /></label>
-        <label>Duration (days) <input id="lDur" type="number" placeholder="90" /></label>
+        <label>Loan Amount (BOT) <input id="lAmount" type="number" min="0" step="any" placeholder="10" oninput="loanPreview()" /></label>
+        <label>Duration (days, 30–365) <input id="lDur" type="number" min="30" max="365" placeholder="90" oninput="loanPreview()" /></label>
       </div>
       <div class="form-row">
         <label>Season Phase
           <select id="lSeason">
-            <option>Planting</option>
-            <option>Growing</option>
-            <option>Harvest</option>
-            <option>Post-Harvest</option>
+            <option value="0">Planting</option>
+            <option value="1">Growing</option>
+            <option value="2">Harvest</option>
+            <option value="3">Post-Harvest</option>
           </select>
         </label>
         <label>Collateral Description <input id="lColl" placeholder="e.g. 500kg Tomato crop" /></label>
       </div>
       <div class="form-row">
-        <label>Collateral Value (BOT) <input id="lCollVal" type="number" placeholder="15" /></label>
+        <label>Collateral Value (BOT) <input id="lCollVal" type="number" min="0" step="any" placeholder="15" oninput="loanPreview()" /></label>
       </div>
-      <p style="font-size:0.8rem;color:var(--gray);margin-bottom:1rem">Minimum 150% collateral ratio required. Your credit score determines interest rate.</p>
-      <button class="btn" onclick="requestLoan()">Request Loan on Botchain</button>
+      <p class="muted" id="loanPreview" style="margin-bottom:1rem">Minimum 150% collateral ratio required. Your credit score determines your interest rate.</p>
+      <button class="btn" id="loanBtn" onclick="requestLoan()">Request Loan on Botchain</button>
     </div>
     <div class="card">
       <h3>📈 Interest Rate Guide</h3>
@@ -190,81 +185,442 @@
   <div id="lend" class="section">
     <div class="card">
       <h3>💰 Deposit to Lending Pool</h3>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your BOT earns yield from farmer interest payments. Withdraw anytime (subject to liquidity).</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your BOT earns a share of the interest farmers pay. Withdraw anytime, subject to available liquidity.</p>
+      <div class="note">Collateral on FarmFi is declared by the borrower, not locked in the contract. If a loan defaults, the loss is carried by lenders.</div>
       <div class="form-row">
-        <label>Deposit Amount (BOT) <input id="dAmt" type="number" placeholder="5" /></label>
+        <label>Deposit Amount (BOT) <input id="dAmt" type="number" min="0" step="any" placeholder="5" /></label>
       </div>
-      <button class="btn btn-green" onclick="depositPool()">Deposit to Pool</button>
+      <button class="btn btn-green" id="depositBtn" onclick="depositPool()">Deposit to Pool</button>
     </div>
     <div class="card">
       <h3>📤 Withdraw from Pool</h3>
-      <div style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your position: <strong>10 BOT</strong> deposited · Pending rewards: <strong>0.12 BOT</strong></div>
+      <div style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">Your position: <strong id="myDeposit">–</strong> BOT deposited · Pending rewards: <strong id="myRewards">–</strong> BOT</div>
       <div class="form-row">
-        <label>Withdraw Amount (BOT) <input id="wAmt" type="number" placeholder="5" /></label>
+        <label>Withdraw Amount (BOT) <input id="wAmt" type="number" min="0" step="any" placeholder="5" /></label>
       </div>
-      <button class="btn btn-outline" onclick="withdrawPool()">Withdraw + Claim Rewards</button>
+      <button class="btn btn-outline" id="withdrawBtn" onclick="withdrawPool()">Withdraw + Claim Rewards</button>
     </div>
   </div>
 
   <div id="myloans" class="section">
     <div class="card">
-      <h3>📋 My Active Loans</h3>
-      <div class="loan-grid">
-        <div class="loan-card">
-          <span class="badge badge-active">Active</span>
-          <h4>Loan #23 – Tomato Farming</h4>
-          <p>💰 12 BOT borrowed</p>
-          <p>📅 Due: Jan 15, 2027</p>
-          <p>💸 Total Owed: 12.36 BOT</p>
-          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
-          <p style="font-size:0.7rem;color:var(--gray);margin-bottom:0.75rem">60 of 90 days elapsed</p>
-          <button class="btn btn-green" style="width:100%" onclick="repayLoan(23)">Repay Loan</button>
-        </div>
-      </div>
+      <h3>📋 My Loans</h3>
+      <div class="loan-grid" id="myLoanGrid"><div class="empty">Connect your wallet to see your loans.</div></div>
     </div>
   </div>
 
   <div id="profile" class="section">
     <div class="card">
       <h3>👤 Farmer Profile</h3>
-      <p style="margin-bottom:1rem">Connected: <strong>0x1234…abcd</strong></p>
-      <div class="form-row">
-        <label>Name <input placeholder="Your name" /></label>
-        <label>Region <input placeholder="e.g. Oyo State" /></label>
+      <p style="margin-bottom:1rem">Connected: <strong id="pAddr">Not connected</strong></p>
+      <div id="registerForm">
+        <div class="form-row">
+          <label>Name <input id="rName" placeholder="Your name" /></label>
+          <label>Region <input id="rRegion" placeholder="e.g. Oyo State" /></label>
+        </div>
+        <p class="muted" style="margin-bottom:1rem">Registration is one-time; name and region can't be changed afterwards.</p>
+        <button class="btn" id="registerBtn" onclick="registerFarmer()">Register on Botchain</button>
       </div>
-      <button class="btn" onclick="registerFarmer()">Register on Botchain</button>
+      <div id="profileInfo" style="display:none">
+        <p style="margin-bottom:0.5rem"><strong id="pName"></strong> · <span id="pRegion" class="muted"></span></p>
+      </div>
       <hr style="margin:1.5rem 0;border-color:var(--border)"/>
       <h3 style="margin-bottom:1rem">📊 Credit Score</h3>
       <div class="credit-bar">
-        <div class="credit-track"><div class="credit-fill" style="width:65%"></div></div>
-        <div class="credit-val">650</div>
+        <div class="credit-track"><div class="credit-fill" id="pScoreBar" style="width:0%"></div></div>
+        <div class="credit-val" id="pScore">–</div>
       </div>
-      <p style="font-size:0.8rem;color:var(--gray)">Score improves with on-time repayments. Defaults reduce score by 100 points.</p>
+      <p style="font-size:0.8rem;color:var(--gray)">Starts at 500. +20 for each repaid loan; −100 for each default.</p>
       <hr style="margin:1.5rem 0;border-color:var(--border)"/>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center">
-        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)">4</div><div style="font-size:0.75rem;color:var(--gray)">Total Loans</div></div>
-        <div><div style="font-size:1.4rem;font-weight:800;color:var(--green)">3</div><div style="font-size:0.75rem;color:var(--gray)">Repaid</div></div>
-        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)">38 BOT</div><div style="font-size:0.75rem;color:var(--gray)">Total Borrowed</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)" id="pLoans">–</div><div style="font-size:0.75rem;color:var(--gray)">Total Loans</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--green)" id="pRepaid">–</div><div style="font-size:0.75rem;color:var(--gray)">Total Repaid (BOT)</div></div>
+        <div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)" id="pBorrowed">–</div><div style="font-size:0.75rem;color:var(--gray)">Total Borrowed (BOT)</div></div>
       </div>
     </div>
   </div>
 
 </div>
 
-<footer>FarmFi is deployed on Botchain · Smart contract: 0xFarmFi… · Non-custodial protocol</footer>
+<footer>FarmFi on BOT Chain mainnet · Contract: <a id="contractLink" target="_blank" rel="noopener" style="color:inherit"></a></footer>
 
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
 <script>
-  function showSection(id) {
+  // ── Config (BOT Chain mainnet) ─────────────────────────────────────────────
+  const CONTRACT_ADDRESS = '0x7f61373F35D9F00Fe8269118d29924fa09E01b94';
+  const CHAIN_ID = 677;
+  const EXPLORER = 'https://scan.botchain.ai';
+  const BOT_CHAIN = {
+    chainId: '0x2a5', chainName: 'BOT Chain Mainnet',
+    nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 },
+    rpcUrls: ['https://rpc.botchain.ai'], blockExplorerUrls: [EXPLORER]
+  };
+
+  const ABI = [
+    'function owner() view returns (address)',
+    'function loanCounter() view returns (uint256)',
+    'function totalPoolDeposits() view returns (uint256)',
+    'function totalActiveLoans() view returns (uint256)',
+    'function farmers(address) view returns (address wallet, string name, string region, uint256 creditScore, uint256 totalBorrowed, uint256 totalRepaid, uint256 loansCount, uint256 activeLoans, bool registered)',
+    'function loans(uint256) view returns (uint256 id, address farmer, uint256 principal, uint256 interestBps, uint256 collateralValue, string collateralDesc, uint256 startTime, uint256 dueDate, uint256 amountRepaid, uint8 status, uint8 season)',
+    'function lenders(address) view returns (uint256 deposited, uint256 rewardDebt, uint256 depositTime)',
+    'function registerFarmer(string _name, string _region)',
+    'function deposit() payable',
+    'function withdraw(uint256 _amount)',
+    'function pendingRewards(address _lender) view returns (uint256)',
+    'function requestLoan(uint256 _amount, uint256 _durationDays, string _collateralDesc, uint256 _collateralValueWei, uint8 _season) returns (uint256)',
+    'function repayLoan(uint256 _loanId) payable',
+    'function markDefault(uint256 _loanId)',
+    'function loanOwed(uint256 _loanId) view returns (uint256)',
+    'function getFarmerLoans(address _farmer) view returns (uint256[])'
+  ];
+
+  const LOAN_STATUS = ['Active', 'Repaid', 'Defaulted', 'Liquidated'];
+  const SEASONS = ['Planting', 'Growing', 'Harvest', 'Post-Harvest'];
+
+  const readProvider = new ethers.JsonRpcProvider(BOT_CHAIN.rpcUrls[0], CHAIN_ID, { staticNetwork: ethers.Network.from(CHAIN_ID) });
+  const farmfi = new ethers.Contract(CONTRACT_ADDRESS, ABI, readProvider);
+
+  let account = null;
+  let profile = null;
+  let allLoans = [];
+  let names = {};
+  let isOwner = false;
+  let txBusy = false;
+
+  // ── UI helpers ─────────────────────────────────────────────────────────────
+  function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    (btn || document.querySelector(`nav button[onclick*="'${id}'"]`))?.classList.add('active');
   }
-  function registerFarmer() { alert('✅ Registering on Botchain...\nSubmitting transaction to FarmFi contract.'); }
-  function requestLoan()    { alert('🌱 Loan request submitted to Botchain!\nAwaiting pool approval and collateral validation.'); }
-  function depositPool()    { alert('💰 Deposit submitted to FarmFi Pool on Botchain!'); }
-  function withdrawPool()   { alert('📤 Withdrawal + reward claim submitted to Botchain!'); }
-  function repayLoan(id)    { alert(`💸 Repaying Loan #${id} on Botchain...\nCalling repayLoan(${id}) with 12.36 BOT.`); }
+
+  const fmt = (wei, dp = 4) => {
+    const [i, f = ''] = ethers.formatEther(wei).split('.');
+    const d = f.slice(0, dp).replace(/0+$/, '');
+    return BigInt(i).toLocaleString('en-US') + (d ? '.' + d : '');
+  };
+  const short = a => a ? a.slice(0, 6) + '…' + a.slice(-4) : '';
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const date = ts => new Date(Number(ts) * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const errText = e => (e && (e.shortMessage || e.reason || e.info?.error?.message || e.data?.message || e.message)) || String(e);
+  function cleanRevert(e) {
+    const m = errText(e);
+    const r = m.match(/reverted(?: with reason string)?:?\s*"?([^"\n]+)"?/i);
+    return r ? r[1].trim() : m;
+  }
+  const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+  let toastTimer;
+  function toast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', type === 'err' ? 7000 : 3500);
+  }
+
+  function withTimeout(p, ms, msg) {
+    return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+  }
+
+  async function busy(btnId, fn) {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.disabled = true;
+    try { await fn(); } catch (e) { toast(errText(e), 'err'); }
+    finally { if (btn) btn.disabled = false; }
+  }
+
+  // Mirrors the contract's _adjustedInterestBps
+  const rateFor = score => score >= 800 ? 600 : score >= 600 ? 800 : score >= 400 ? 1000 : 1200;
+
+  // ── Wallet ─────────────────────────────────────────────────────────────────
+  async function connectWallet(silent = false) {
+    if (!window.ethereum) { if (!silent) toast('No wallet detected. Install MetaMask or a compatible wallet.', 'err'); return; }
+    const btn = document.getElementById('walletBtn');
+    try {
+      if (!silent) btn.disabled = true;
+      const accounts = await withTimeout(
+        window.ethereum.request({ method: silent ? 'eth_accounts' : 'eth_requestAccounts' }),
+        silent ? 5000 : 60000,
+        'Wallet did not respond. Open MetaMask from the toolbar and clear pending requests.'
+      );
+      if (!accounts || !accounts.length) return;
+      account = ethers.getAddress(accounts[0]);
+      btn.textContent = short(account);
+      setText('pAddr', account);
+      if (window.ethereum.on) window.ethereum.on('accountsChanged', () => location.reload());
+      await refreshAll();
+      if (!silent) {
+        toast('Wallet connected ✓', 'ok');
+        withTimeout(ensureChain(), 60000, 'switch').catch(() => toast('Switch MetaMask to BOT Chain (677) before sending transactions', 'err'));
+      }
+    } catch (e) {
+      if (!silent) toast(errText(e), 'err');
+    } finally { btn.disabled = false; }
+  }
+
+  async function ensureChain() {
+    const id = parseInt(await window.ethereum.request({ method: 'eth_chainId' }), 16);
+    if (id === CHAIN_ID) return;
+    try {
+      await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BOT_CHAIN.chainId }] });
+    } catch (e) {
+      if (e.code === 4902 || e.code === -32603 || /unrecognized|not been added/i.test(e.message || '')) {
+        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [BOT_CHAIN] });
+      } else throw e;
+    }
+  }
+
+  // Estimate on our own RPC (reverts show the contract's message), then send a complete tx to the wallet
+  async function sendTx(fn, args = [], value = 0n) {
+    if (!account) throw new Error('Connect your wallet first');
+    if (txBusy) throw new Error('Another transaction is still pending');
+    txBusy = true;
+    try {
+      await withTimeout(ensureChain(), 60000, 'Approve the switch to BOT Chain in MetaMask');
+      const data = farmfi.interface.encodeFunctionData(fn, args);
+      let gas;
+      try { gas = await readProvider.estimateGas({ from: account, to: CONTRACT_ADDRESS, data, value }); }
+      catch (e) { throw new Error(cleanRevert(e)); }
+      toast('Confirm in your wallet…');
+      const hash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{ from: account, to: CONTRACT_ADDRESS, data, value: ethers.toQuantity(value), gas: ethers.toQuantity(gas * 12n / 10n) }]
+      });
+      toast('Sent. Waiting for confirmation…');
+      const r = await readProvider.waitForTransaction(hash, 1, 180000);
+      if (!r) throw new Error('Not confirmed within 3 minutes. Check ' + EXPLORER + '/tx/' + hash);
+      if (r.status !== 1) throw new Error('Transaction reverted');
+      return hash;
+    } finally { txBusy = false; }
+  }
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+  async function refreshAll() {
+    await loadPool();
+    await Promise.all([loadProfile(), loadLender()]);
+    renderLoans();
+    loanPreview();
+  }
+
+  async function loadPool() {
+    try {
+      const [bal, deposits, deployed, count, owner] = await Promise.all([
+        readProvider.getBalance(CONTRACT_ADDRESS), farmfi.totalPoolDeposits(),
+        farmfi.totalActiveLoans(), farmfi.loanCounter(), farmfi.owner()
+      ]);
+      isOwner = !!account && owner.toLowerCase() === account.toLowerCase();
+      setText('stBalance', fmt(bal, 2));
+      setText('stLoans', Number(count));
+      setText('pDeposits', fmt(deposits, 2) + ' BOT');
+      setText('pDeployed', fmt(deployed, 2) + ' BOT');
+      const free = deposits > deployed ? deposits - deployed : 0n;
+      setText('pAvailable', fmt(free, 2) + ' BOT');
+
+      const ids = Array.from({ length: Number(count) }, (_, i) => i + 1);
+      allLoans = await Promise.all(ids.map(id => farmfi.loans(id)));
+      const borrowers = [...new Set(allLoans.map(l => l.farmer.toLowerCase()))];
+      await Promise.all(borrowers.filter(a => !names[a]).map(async a => {
+        try { const f = await farmfi.farmers(a); names[a] = { name: f.name, region: f.region }; } catch { names[a] = {}; }
+      }));
+
+      const st = s => allLoans.filter(l => Number(l.status) === s).length;
+      setText('stActive', st(0));
+      setText('stRepay', (st(1) + st(2)) ? Math.round(st(1) * 100 / (st(1) + st(2))) + '%' : '–');
+      setText('stBorrowers', borrowers.length);
+    } catch (e) {
+      document.getElementById('recentLoans').innerHTML = `<div class="empty">Could not reach BOT Chain: ${esc(errText(e))}</div>`;
+      throw e;
+    }
+  }
+
+  function loanCard(l, mine) {
+    const status = LOAN_STATUS[Number(l.status)];
+    const now = Date.now() / 1000;
+    const overdue = status === 'Active' && now > Number(l.dueDate);
+    const badge = overdue ? 'badge-overdue' : { Active: 'badge-active', Repaid: 'badge-repaid' }[status] || 'badge-defaulted';
+    const total = Number(l.dueDate) - Number(l.startTime);
+    const elapsed = Math.min(Math.max(now - Number(l.startTime), 0), total);
+    const pct = status === 'Repaid' ? 100 : Math.round(elapsed * 100 / total);
+    const who = names[l.farmer.toLowerCase()] || {};
+    return `<div class="loan-card">
+      <span class="badge ${badge}">${overdue ? 'Overdue' : status}</span>
+      <h4>Loan #${l.id} – ${esc(l.collateralDesc || 'Farm loan')}</h4>
+      ${mine ? '' : `<p>👨‍🌾 ${esc(who.name || short(l.farmer))}${who.region ? ' · ' + esc(who.region) : ''}</p>`}
+      <p>💰 ${fmt(l.principal)} BOT · ${Number(l.interestBps) / 100}% p.a. · ${SEASONS[Number(l.season)]}</p>
+      <p>📅 Due: ${date(l.dueDate)}</p>
+      ${mine && status === 'Active' ? `<p>💸 Owed now: <strong id="owed-${l.id}">…</strong> BOT</p>` : ''}
+      ${status === 'Repaid' ? `<p>✅ Repaid ${fmt(l.amountRepaid)} BOT</p>` : ''}
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <p style="font-size:0.7rem;color:var(--gray)">${status === 'Repaid' ? 'Fully repaid ✓' : status === 'Active' ? pct + '% of term elapsed' : status}</p>
+      ${mine && status === 'Active' ? `<button class="btn btn-green" style="width:100%;margin-top:0.75rem" id="repay-${l.id}" onclick="repayLoan(${l.id})">Repay Loan</button>` : ''}
+      ${!mine && isOwner && overdue ? `<button class="btn btn-red" style="width:100%;margin-top:0.75rem" id="default-${l.id}" onclick="markDefault(${l.id})">Mark as Defaulted</button>` : ''}
+    </div>`;
+  }
+
+  function renderLoans() {
+    const recent = allLoans.slice().reverse().slice(0, 9);
+    document.getElementById('recentLoans').innerHTML = recent.length
+      ? recent.map(l => loanCard(l, false)).join('') : '<div class="empty">No loans yet.</div>';
+
+    const overdue = allLoans.filter(l => Number(l.status) === 0 && Date.now() / 1000 > Number(l.dueDate));
+    document.getElementById('ownerCard').style.display = isOwner ? 'block' : 'none';
+    if (isOwner) {
+      document.getElementById('overdueLoans').innerHTML = overdue.length
+        ? overdue.map(l => loanCard(l, false)).join('') : '<div class="empty">No overdue loans.</div>';
+    }
+
+    if (!account) return;
+    const mine = allLoans.filter(l => l.farmer.toLowerCase() === account.toLowerCase()).reverse();
+    document.getElementById('myLoanGrid').innerHTML = mine.length
+      ? mine.map(l => loanCard(l, true)).join('') : '<div class="empty">No loans yet. Request one from the Borrow tab.</div>';
+    mine.filter(l => Number(l.status) === 0).forEach(async l => {
+      try { setText('owed-' + l.id, fmt(await farmfi.loanOwed(l.id), 6)); } catch {}
+    });
+  }
+
+  async function loadProfile() {
+    if (!account) return;
+    try {
+      profile = await farmfi.farmers(account);
+      const reg = profile.registered;
+      document.getElementById('registerForm').style.display = reg ? 'none' : 'block';
+      document.getElementById('profileInfo').style.display = reg ? 'block' : 'none';
+      const score = Number(profile.creditScore);
+      setText('pName', profile.name);
+      setText('pRegion', profile.region);
+      setText('pScore', reg ? score : '–');
+      document.getElementById('pScoreBar').style.width = (reg ? score / 10 : 0) + '%';
+      setText('pLoans', Number(profile.loansCount));
+      setText('pRepaid', fmt(profile.totalRepaid, 2));
+      setText('pBorrowed', fmt(profile.totalBorrowed, 2));
+      const note = document.getElementById('borrowNote');
+      if (!reg) note.textContent = 'Register on the Profile tab before borrowing.';
+      else if (Number(profile.activeLoans) >= 2) note.textContent = 'You have 2 active loans, the maximum. Repay one before requesting another.';
+      else note.textContent = `Your credit score is ${score}, so your rate is ${rateFor(score) / 100}% per year. Interest accrues per second, so repaying early costs less.`;
+    } catch {}
+  }
+
+  async function loadLender() {
+    if (!account) return;
+    try {
+      const [pos, rewards] = await Promise.all([farmfi.lenders(account), farmfi.pendingRewards(account)]);
+      setText('myDeposit', fmt(pos.deposited));
+      setText('myRewards', fmt(rewards, 6));
+    } catch {}
+  }
+
+  // ── Borrow ─────────────────────────────────────────────────────────────────
+  function loanPreview() {
+    const el = document.getElementById('loanPreview');
+    const amt = parseFloat(document.getElementById('lAmount').value) || 0;
+    const days = parseInt(document.getElementById('lDur').value) || 0;
+    const coll = parseFloat(document.getElementById('lCollVal').value) || 0;
+    if (!amt) { el.textContent = 'Minimum 150% collateral ratio required. Your credit score determines your interest rate.'; return; }
+    const need = amt * 1.5;
+    const bps = rateFor(profile && profile.registered ? Number(profile.creditScore) : 500);
+    const interest = days ? amt * bps / 10000 * days / 365 : 0;
+    el.textContent = `Collateral needed: at least ${need.toFixed(4)} BOT${coll && coll < need ? ' (yours is too low)' : ''}. ` +
+      (days ? `Repay about ${(amt + interest).toFixed(4)} BOT if held for the full ${days} days at ${bps / 100}%.` : '');
+  }
+
+  function requestLoan() {
+    busy('loanBtn', async () => {
+      const amt = document.getElementById('lAmount').value.trim();
+      const days = parseInt(document.getElementById('lDur').value);
+      const coll = document.getElementById('lCollVal').value.trim();
+      const desc = document.getElementById('lColl').value.trim();
+      const season = parseInt(document.getElementById('lSeason').value);
+      if (!amt || !coll || !desc) throw new Error('Fill in amount, collateral description and value');
+      if (!(days >= 30 && days <= 365)) throw new Error('Duration must be 30–365 days');
+      const amtWei = ethers.parseEther(amt);
+      const collWei = ethers.parseEther(coll);
+      if (amtWei <= 0n) throw new Error('Amount must be greater than 0');
+      if (collWei < amtWei * 150n / 100n) throw new Error('Collateral must be at least 150% of the loan');
+      await sendTx('requestLoan', [amtWei, days, desc, collWei, season]);
+      toast('Loan disbursed to your wallet ✓', 'ok');
+      ['lAmount', 'lDur', 'lColl', 'lCollVal'].forEach(id => document.getElementById(id).value = '');
+      await refreshAll();
+      showSection('myloans');
+    });
+  }
+
+  function repayLoan(id) {
+    busy('repay-' + id, async () => {
+      const l = allLoans.find(x => Number(x.id) === id);
+      const owed = await farmfi.loanOwed(id);
+      // Interest grows every second, so add ~15 minutes of interest; the contract refunds the excess
+      const buffer = l.principal * l.interestBps * 900n / (10000n * 365n * 86400n) + 1n;
+      const value = owed + buffer;
+      const bal = await readProvider.getBalance(account);
+      if (bal < value) throw new Error(`Not enough BOT: need about ${fmt(value, 6)} BOT plus gas`);
+      if (!confirm(`Repay loan #${id}: about ${fmt(owed, 6)} BOT? Any small excess is refunded.`)) return;
+      await sendTx('repayLoan', [id], value);
+      toast('Loan repaid ✓ Credit score +20', 'ok');
+      await refreshAll();
+    });
+  }
+
+  function markDefault(id) {
+    if (!confirm(`Mark loan #${id} as defaulted? This lowers the farmer's score by 100.`)) return;
+    busy('default-' + id, async () => {
+      await sendTx('markDefault', [id]);
+      toast('Loan marked as defaulted', 'ok');
+      await refreshAll();
+    });
+  }
+
+  // ── Lend ───────────────────────────────────────────────────────────────────
+  function depositPool() {
+    busy('depositBtn', async () => {
+      const v = document.getElementById('dAmt').value.trim();
+      if (!v) throw new Error('Enter an amount');
+      const wei = ethers.parseEther(v);
+      if (wei <= 0n) throw new Error('Amount must be greater than 0');
+      // The deployed contract drops unclaimed rewards when you top up a position
+      const pending = account ? await farmfi.pendingRewards(account) : 0n;
+      if (pending > 0n && !confirm(`You have ${fmt(pending, 6)} BOT in pending rewards that will be lost if you deposit more now. Withdraw first to keep them. Deposit anyway?`)) return;
+      await sendTx('deposit', [], wei);
+      toast('Deposited ✓', 'ok');
+      document.getElementById('dAmt').value = '';
+      await refreshAll();
+    });
+  }
+
+  function withdrawPool() {
+    busy('withdrawBtn', async () => {
+      const v = document.getElementById('wAmt').value.trim();
+      if (!v) throw new Error('Enter an amount');
+      await sendTx('withdraw', [ethers.parseEther(v)]);
+      toast('Withdrawn + rewards sent ✓', 'ok');
+      document.getElementById('wAmt').value = '';
+      await refreshAll();
+    });
+  }
+
+  // ── Profile ────────────────────────────────────────────────────────────────
+  function registerFarmer() {
+    busy('registerBtn', async () => {
+      const name = document.getElementById('rName').value.trim();
+      const region = document.getElementById('rRegion').value.trim();
+      if (!name || !region) throw new Error('Enter your name and region');
+      await sendTx('registerFarmer', [name, region]);
+      toast('Registered ✓ Starting credit score: 500', 'ok');
+      await refreshAll();
+    });
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────────────
+  const link = document.getElementById('contractLink');
+  link.href = `${EXPLORER}/address/${CONTRACT_ADDRESS}`;
+  link.textContent = short(CONTRACT_ADDRESS);
+
+  loadPool().then(renderLoans).catch(() => {});
+  if (window.ethereum) connectWallet(true);
 </script>
 </body>
 </html>
